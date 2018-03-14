@@ -1,7 +1,7 @@
 extern crate prime_sieve;
 
 fn main() {
-    for prime in prime_sieve::generate().take(10) {
+    for prime in prime_sieve::generate(15).take(5) {
         println!("{}", prime);
     }
 }
