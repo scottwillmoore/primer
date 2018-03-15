@@ -41,3 +41,15 @@ pub fn generate(upper_bound: usize) -> Prime {
         upper_bound,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn first_10_primes() {
+        let primes: Vec<usize> = generate(100).take(10).collect();
+
+        assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
+    }
+}
