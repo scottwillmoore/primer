@@ -1,42 +1,47 @@
+#![feature(iterator_step_by)]
+
 pub struct Prime {
     is_composite: Vec<bool>,
-    current_prime: usize,
-    upper_bound: usize,
+    current_index: usize,
+}
+
+impl Prime {
+    fn get_next_prime(&self, prime: usize) -> Option<usize> {
+        self.is_composite
+            .iter()
+            .enumerate()
+            .skip(prime + 1)
+            .find(|&(_, &is_composite)| !is_composite)
+            .map(|(next_prime, _)| next_prime)
+    }
+
+    fn mark_prime_multiples(&mut self, prime: usize) {
+        self.is_composite
+            .iter_mut()
+            .step_by(prime)
+            .skip(1)
+            .for_each(|is_composite| *is_composite = true);
+    }
 }
 
 impl Iterator for Prime {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        let current_prime = self.current_prime;
-        let mut prime_multiple = current_prime * 2;
-        while prime_multiple <= self.upper_bound {
-            self.is_composite[prime_multiple] = true;
-            prime_multiple += current_prime;
-        }
+        let maybe_next_prime = self.get_next_prime(self.current_index);
 
-        let mut next_prime = current_prime + 1;
-        while next_prime <= self.upper_bound {
-            if !self.is_composite[next_prime] {
-                break;
-            }
-            next_prime += 1;
-        }
-
-        if current_prime <= self.upper_bound {
-            self.current_prime = next_prime;
-            Some(current_prime)
-        } else {
-            None
-        }
+        maybe_next_prime.and_then(|next_prime| {
+            self.mark_prime_multiples(next_prime);
+            self.current_index = next_prime;
+            Some(next_prime)
+        })
     }
 }
 
 pub fn generate(upper_bound: usize) -> Prime {
     Prime {
         is_composite: vec![false; upper_bound + 1],
-        current_prime: 2,
-        upper_bound,
+        current_index: 1,
     }
 }
 
