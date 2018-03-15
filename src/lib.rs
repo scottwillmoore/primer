@@ -33,8 +33,6 @@ impl Iterator for Prime {
 }
 
 pub fn generate(upper_bound: usize) -> Prime {
-    assert!(upper_bound > 0);
-
     Prime {
         is_composite: vec![false; upper_bound],
         current_prime: 2,
@@ -47,9 +45,39 @@ mod tests {
     use super::*;
 
     #[test]
-    fn first_10_primes() {
-        let primes: Vec<usize> = generate(100).take(10).collect();
+    fn first_ten_primes() {
+        let primes: Vec<usize> = generate(30).take(10).collect();
 
         assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
+    }
+
+    #[test]
+    fn first_ten_composites() {
+        let primes: Vec<usize> = generate(20).collect();
+        let composites = vec![1, 4, 6, 8, 9, 10, 12, 14, 15, 16];
+
+        for composite in &composites {
+            assert!(!primes.contains(composite));
+        }
+    }
+
+    #[test]
+    fn assorted_large_primes() {
+        let primes: Vec<usize> = generate(1_000_000).collect();
+        let validated_primes = vec![557, 3_677, 7_927, 27_337, 59_357, 128_189, 611_921, 882_313];
+
+        for validated_prime in &validated_primes {
+            assert!(primes.contains(validated_prime));
+        }
+    }
+
+    #[test]
+    fn assorted_large_composites() {
+        let primes: Vec<usize> = generate(20).collect();
+        let composites = vec![275, 1_056, 6_084, 11_697, 56_806, 159_815, 419_746, 800_867];
+
+        for composite in &composites {
+            assert!(!primes.contains(composite));
+        }
     }
 }
