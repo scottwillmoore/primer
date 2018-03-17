@@ -1,13 +1,13 @@
 #![feature(iterator_step_by)]
 
 pub struct Prime {
-    is_composite: Vec<bool>,
-    current_index: usize,
+    sieve: Vec<bool>,
+    current: usize,
 }
 
 impl Prime {
     fn get_next_prime(&self, prime: usize) -> Option<usize> {
-        self.is_composite
+        self.sieve
             .iter()
             .enumerate()
             .skip(prime + 1)
@@ -16,7 +16,7 @@ impl Prime {
     }
 
     fn mark_prime_multiples(&mut self, prime: usize) {
-        self.is_composite
+        self.sieve
             .iter_mut()
             .step_by(prime)
             .skip(1)
@@ -28,11 +28,11 @@ impl Iterator for Prime {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        let maybe_next_prime = self.get_next_prime(self.current_index);
+        let maybe_next_prime = self.get_next_prime(self.current);
 
         maybe_next_prime.and_then(|next_prime| {
             self.mark_prime_multiples(next_prime);
-            self.current_index = next_prime;
+            self.current = next_prime;
             Some(next_prime)
         })
     }
@@ -40,8 +40,8 @@ impl Iterator for Prime {
 
 pub fn generate(upper_bound: usize) -> Prime {
     Prime {
-        is_composite: vec![false; upper_bound + 1],
-        current_index: 1,
+        sieve: vec![false; upper_bound + 1],
+        current: 1,
     }
 }
 
