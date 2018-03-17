@@ -49,13 +49,8 @@ fn main() {
         })
         .unwrap_or_else(|error| error.exit());
 
-    let bound = match args.flag_bound {
-        Some(bound) => bound,
-        None => {
-            let count: f64 = args.flag_count.unwrap() as f64;
-            (count / count.ln()) as usize
-        }
-    };
+    // TODO: handle both bound and count arguments
+    let bound = args.flag_bound.unwrap();
 
     for prime in prime_sieve::generate(bound) {
         print!("{}, ", prime);
