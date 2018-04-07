@@ -1,47 +1,60 @@
 #![feature(iterator_step_by)]
 
-pub struct Prime {
-    sieve: Vec<bool>,
-    current: usize,
+pub struct Sieve {
+    is_prime: Vec<bool>,
+    upper_bound: usize,
 }
 
-impl Prime {
-    fn get_next_prime(&self, prime: usize) -> Option<usize> {
-        self.sieve
+impl Sieve {
+    pub fn new(upper_bound: usize) -> Sieve {
+        assert!(upper_bound > 1);
+
+        let mut is_prime = vec![true; upper_bound];
+
+        is_prime[0] = false;
+        is_prime[1] = false;
+
+        let limit = (upper_bound as f64).sqrt() as usize;
+        for i in 2..(limit + 1) {
+            if is_prime[i] {
+                let i_squared = i.pow(2);
+                for j in (i_squared..upper_bound).step_by(i) {
+                    is_prime[j] = false;
+                }
+            }
+        }
+
+        Sieve {
+            is_prime,
+            upper_bound,
+        }
+    }
+
+    pub fn iter<'a>(&'a self) -> Box<Iterator<Item = usize> + 'a> {
+        Box::new(
+            self.is_prime
+                .iter()
+                .enumerate()
+                .filter(|&(_, is_prime)| *is_prime)
+                .map(|(prime, _)| prime),
+        )
+    }
+
+    pub fn upper_bound(&self) -> usize {
+        self.upper_bound
+    }
+
+    pub fn is_prime(&self, n: usize) -> Option<bool> {
+        self.is_prime.iter().nth(n).map(|is_prime| *is_prime)
+    }
+
+    pub fn nth_prime(&self, n: usize) -> Option<usize> {
+        self.is_prime
             .iter()
             .enumerate()
-            .skip(prime + 1)
-            .find(|&(_, &is_composite)| !is_composite)
-            .map(|(next_prime, _)| next_prime)
-    }
-
-    fn mark_prime_multiples(&mut self, prime: usize) {
-        self.sieve
-            .iter_mut()
-            .step_by(prime)
-            .skip(1)
-            .for_each(|is_composite| *is_composite = true);
-    }
-}
-
-impl Iterator for Prime {
-    type Item = usize;
-
-    fn next(&mut self) -> Option<usize> {
-        let maybe_next_prime = self.get_next_prime(self.current);
-
-        maybe_next_prime.and_then(|next_prime| {
-            self.mark_prime_multiples(next_prime);
-            self.current = next_prime;
-            Some(next_prime)
-        })
-    }
-}
-
-pub fn generate(upper_bound: usize) -> Prime {
-    Prime {
-        sieve: vec![false; upper_bound + 1],
-        current: 1,
+            .filter(|&(_, is_prime)| *is_prime)
+            .nth(n)
+            .map(|(prime, _)| prime)
     }
 }
 
@@ -51,14 +64,19 @@ mod tests {
 
     #[test]
     fn first_ten_primes() {
-        let primes: Vec<usize> = generate(30).take(10).collect();
+        let sieve = Sieve::new(30);
 
+        assert_eq!(sieve.is_prime(10).unwrap(), false);
+        assert_eq!(sieve.is_prime(13).unwrap(), true);
+
+        let primes: Vec<usize> = sieve.iter().collect();
         assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
     }
 
+    /*
     #[test]
     fn first_ten_composites() {
-        let primes: Vec<usize> = generate(20).collect();
+        let primes: Vec<usize> = Sieve::new(20).iter().collect();
         let composites = vec![1, 4, 6, 8, 9, 10, 12, 14, 15, 16];
 
         for composite in &composites {
@@ -68,7 +86,7 @@ mod tests {
 
     #[test]
     fn assorted_large_primes() {
-        let primes: Vec<usize> = generate(1_000_000).collect();
+        let primes: Vec<usize> = Sieve::new(1_000_000).iter().collect();
         let validated_primes = vec![557, 3_677, 7_927, 27_337, 59_357, 128_189, 611_921, 882_313];
 
         for validated_prime in &validated_primes {
@@ -78,11 +96,12 @@ mod tests {
 
     #[test]
     fn assorted_large_composites() {
-        let primes: Vec<usize> = generate(20).collect();
+        let primes: Vec<usize> = Sieve::new(20).iter().collect();
         let composites = vec![275, 1_056, 6_084, 11_697, 56_806, 159_815, 419_746, 800_867];
 
         for composite in &composites {
             assert!(!primes.contains(composite));
         }
     }
+    */
 }

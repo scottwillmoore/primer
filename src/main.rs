@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate serde_derive;
 extern crate docopt;
-
 extern crate primer;
 
 const USAGE: &'static str = "
@@ -52,7 +51,8 @@ fn main() {
     // TODO: handle both bound and count arguments
     let bound = args.flag_bound.unwrap();
 
-    for prime in primer::generate(bound) {
+    let sieve = primer::Sieve::new(bound);
+    for prime in sieve.iter() {
         print!("{}, ", prime);
     }
     println!();
