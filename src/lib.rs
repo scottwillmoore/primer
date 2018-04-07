@@ -1,4 +1,7 @@
 #![feature(iterator_step_by)]
+#![feature(test)]
+
+extern crate test;
 
 pub struct Sieve {
     is_prime: Vec<bool>,
@@ -61,6 +64,7 @@ impl Sieve {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
 
     #[test]
     fn first_ten_primes() {
@@ -100,5 +104,15 @@ mod tests {
         for composite in &composites {
             assert!(!primes.contains(composite));
         }
+    }
+
+    #[bench]
+    fn sum_primes_under_two_million(b: &mut Bencher) {
+        b.iter(|| {
+            let sieve = Sieve::new(2_000_000);
+            let sum: usize = sieve.iter().sum();
+
+            assert_eq!(sum, 142_913_828_922);
+        });
     }
 }
