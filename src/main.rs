@@ -2,7 +2,7 @@
 extern crate serde_derive;
 extern crate docopt;
 
-extern crate prime_sieve;
+extern crate primer;
 
 const USAGE: &'static str = "
 Usage:
@@ -52,7 +52,7 @@ fn main() {
     // TODO: handle both bound and count arguments
     let bound = args.flag_bound.unwrap();
 
-    for prime in prime_sieve::generate(bound) {
+    for prime in primer::generate(bound) {
         print!("{}, ", prime);
     }
     println!();

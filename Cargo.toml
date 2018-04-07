@@ -1,5 +1,5 @@
 [package]
-name = "prime_sieve"
+name = "primer"
 version = "0.1.0"
 authors = ["Scott Moore <scott.will.moore@gmail.com>"]
 
