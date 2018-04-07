@@ -65,18 +65,14 @@ mod tests {
     #[test]
     fn first_ten_primes() {
         let sieve = Sieve::new(30);
-
-        assert_eq!(sieve.is_prime(10).unwrap(), false);
-        assert_eq!(sieve.is_prime(13).unwrap(), true);
-
-        let primes: Vec<usize> = sieve.iter().collect();
+        let primes: Vec<_> = sieve.iter().collect();
         assert_eq!(primes, vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
     }
 
-    /*
     #[test]
     fn first_ten_composites() {
-        let primes: Vec<usize> = Sieve::new(20).iter().collect();
+        let sieve = Sieve::new(20);
+        let primes: Vec<_> = sieve.iter().collect();
         let composites = vec![1, 4, 6, 8, 9, 10, 12, 14, 15, 16];
 
         for composite in &composites {
@@ -86,7 +82,8 @@ mod tests {
 
     #[test]
     fn assorted_large_primes() {
-        let primes: Vec<usize> = Sieve::new(1_000_000).iter().collect();
+        let sieve = Sieve::new(1_000_000);
+        let primes: Vec<_> = sieve.iter().collect();
         let validated_primes = vec![557, 3_677, 7_927, 27_337, 59_357, 128_189, 611_921, 882_313];
 
         for validated_prime in &validated_primes {
@@ -96,12 +93,12 @@ mod tests {
 
     #[test]
     fn assorted_large_composites() {
-        let primes: Vec<usize> = Sieve::new(20).iter().collect();
+        let sieve = Sieve::new(1_000_000);
+        let primes: Vec<_> = sieve.iter().collect();
         let composites = vec![275, 1_056, 6_084, 11_697, 56_806, 159_815, 419_746, 800_867];
 
         for composite in &composites {
             assert!(!primes.contains(composite));
         }
     }
-    */
 }
